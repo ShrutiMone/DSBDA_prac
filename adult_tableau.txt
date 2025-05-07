@@ -1,0 +1,133 @@
+0) Initial Setup
+Open Tableau and click “Text File” (if CSV) under Connect.
+
+Navigate to and select your adult.csv file.
+
+Tableau will show a preview—verify that columns like age, workclass, education, income, native.country, sex, etc. have the correct data types (blue = dimension, green = measure).
+
+a) Income Class of People with “Master’s” and “Doctorate” Education
+New Sheet → name it “Income by Master’s/Doctorate.”
+
+Drag education to the Filters shelf.
+
+In the dialog, check Master’s and Doctorate only → OK.
+
+Drag income to Columns.
+
+Drag Number of Records (automatically generated) to Rows.
+
+On the Marks card, select Bar.
+
+Sort Descending by the bar height.
+
+(Optional) Drag income to Color to differentiate “<=50K” vs “>50K.”
+
+Rename title to “Income Distribution for Master’s & Doctorate”.
+
+b) Income Class of People Who Have Private Jobs
+New Sheet → “Income for Private Workclass.”
+
+Drag workclass to Filters, select Private → OK.
+
+Drag income to Columns, Number of Records to Rows.
+
+Choose Bar on the Marks card.
+
+(Optional) Color by income.
+
+Title it “Income Distribution for Private Sector”.
+
+c) Yearly Sales Comparison
+Note: The Adult dataset has no “year” or “sales” fields. If you intended to compare a numerical measure over categories, replace with e.g. “Average Hours per Week by Education Level” or similar. Otherwise this specific chart isn’t applicable here.
+
+d) Country‑Wise Statistics on a Map
+New Sheet → “Country Map.”
+
+Double‑click native.country → Tableau will build a map.
+
+On the Marks card, change type to Map.
+
+Drag Number of Records to Size (bigger circles for more people).
+
+(Optional) Drag income to Color to show proportion of high‑ vs low‑income by country.
+
+Title it “Population by Country” (or “Income by Country”).
+
+e) Age‑wise: Education vs. Income
+You want to see how income splits by education across ages. One approach is a scatter or a heat‑grid:
+
+New Sheet → “Age × Education vs Income.”
+
+Drag age to Columns.
+
+Drag education.num (or education) to Rows.
+
+On Marks, select Square (for a crosstab heat‑map).
+
+Drag Number of Records to Color (darker = more people).
+
+Drag income to Label or Color (if you prefer two‑color “<=50K” vs “>50K” impact).
+
+Title it “Age vs Education: Income Distribution”.
+
+f) Country‑wise Male/Female Ratio
+New Sheet → “Sex Ratio by Country.”
+
+Drag native.country to Columns.
+
+Drag Number of Records to Rows.
+
+Drag sex onto Color (Tableau will stack bars by male/female).
+
+Sort countries by total height or alphabetically.
+
+Title it “Male vs Female Population by Country”.
+
+(Optional) Format as Stacked Bar in the Marks card.
+
+g) Income Class Based on Workclass (Gov’t vs Other)
+Create a Calculated Field called Sector with:
+
+sql
+Copy
+Edit
+IF [workclass] = 'Federal-gov'
+  OR [workclass] = 'State-gov'
+  OR [workclass] = 'Local-gov'
+THEN 'Government'
+ELSE 'Other'
+END
+New Sheet → “Income by Sector.”
+
+Drag your new Sector to Columns.
+
+Drag Number of Records to Rows.
+
+Drag income to Color (to split <=50K vs >50K).
+
+Set Marks to Bar.
+
+Title it “Income Distribution: Government vs Other”.
+
+Putting It All on a Dashboard
+Click New Dashboard.
+
+Drag each sheet into the layout.
+
+Add dropdown Filters (e.g. Country, Education) to the dashboard for interactivity.
+
+Arrange titles and legends neatly; size containers to avoid scrolling.
+
+Save or publish your dashboard.
+
+🎓 Tips for Tableau Newbies
+
+“Show Me” panel will suggest chart types once you select fields.
+
+Filters: Drag fields into Filters shelf to slice datasets.
+
+Marks card controls color, size, shape, labels.
+
+Calculated Fields let you group or transform data on the fly.
+
+Use Tooltips (hover) to inspect exact values.

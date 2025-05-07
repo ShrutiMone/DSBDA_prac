@@ -1,0 +1,146 @@
+a. Top 10 Products by Total Sales
+New Worksheet → name it “Top 10 Products.”
+
+Drag Description to Rows.
+
+Create a calculated field called Sales:
+
+sql
+Copy
+Edit
+[Quantity] * [UnitPrice]
+and drag Sales to Columns.
+
+Sort descending by the SUM(Sales).
+
+On the Filters shelf, drag Description → Top tab → By Field → Top 10 by SUM(Sales) → OK.
+
+Select Bar in the Marks card and format titles/labels.
+
+b. Product Contribution to Total Sales (Pie Chart)
+New Worksheet → “Sales Contribution.”
+
+Drag Description to Color on the Marks card.
+
+Drag Sales (our calc) to Angle and again to Label.
+
+In the Marks card dropdown, choose Pie.
+
+On Label, click Text and insert % of Total (right‑click the pill → Quick Table Calculation → Percent of Total).
+
+Tidy the legend and title: “Product % of Total Sales.”
+
+c. Month‑wise Sales in 2010 (Descending)
+New Worksheet → “2010 Monthly Sales.”
+
+Drag InvoiceDate to Columns, then click its pill and choose MONTH(Date).
+
+Drag Sales to Rows.
+
+On InvoiceDate pill in Filters → Range of dates → Select from 1 Jan 2010 to 31 Dec 2010 → OK.
+
+Sort the months descending by SUM(Sales) (click the axis … Sort Descending).
+
+Choose Bar or Line, and title it “2010 Month‑wise Sales (Desc).”
+
+d. Most Loyal Customers (by # of Orders)
+New Worksheet → “Top Customers.”
+
+Drag CustomerID to Rows.
+
+Drag InvoiceNo to Columns, then click its pill → Measure → Count (distinct) → rename it Order Count.
+
+Sort descending by Order Count.
+
+On Filters, drag CustomerID → Top → By Field → Top 10 by CountD(InvoiceNo) → OK.
+
+Use Bar chart; title: “Top 10 Loyal Customers.”
+
+e. Yearly Sales Comparison
+New Worksheet → “Yearly Sales.”
+
+Drag InvoiceDate to Columns → choose YEAR(Date).
+
+Drag Sales to Rows.
+
+Select Line chart.
+
+Title it “Yearly Sales Trend.”
+
+f. Country‑wise Total Sales on Map
+New Worksheet → “Sales by Country.”
+
+Double‑click Country → Tableau builds a map.
+
+Drag Sales to Size (bigger circles = more sales).
+
+(Optional) Drag Sales to Color for a gradient.
+
+Title: “Geospatial Sales by Country.”
+
+g. Country‑wise Popular Product
+New Worksheet → “Popular Product by Country.”
+
+Drag Country to Rows.
+
+Drag Description to Columns.
+
+Drag Sales to Color (to create a heat‑map).
+
+On Filters, drag Description → Top → By Field → Top 1 by SUM(Sales) for each country.
+
+In that dialog, pick “Per Pane” so Tableau finds the top product per country.
+
+Title: “Top‑selling Product by Country.”
+
+h. Bottom 10 Products by Total Sales
+New Worksheet → “Bottom 10 Products.”
+
+Repeat steps for Top 10, but in the Filters → Top tab choose Bottom 10 by SUM(Sales).
+
+Title: “Bottom 10 Products by Sales.”
+
+i. Top 5 Purchase Orders (Largest Invoice Totals)
+New Worksheet → “Top 5 Invoices.”
+
+Drag InvoiceNo to Rows.
+
+Drag Sales to Columns.
+
+On Filters, drag InvoiceNo → Top → By Field → Top 5 by SUM(Sales).
+
+Bar chart; title: “Top 5 Invoices by Revenue.”
+
+j. Most Popular Products Based on Sales
+This is effectively your “Top 10 Products” but you can generalize to Top N.
+
+New Worksheet → “Popular Products.”
+
+Drag Description to Rows, Sales to Columns.
+
+Sort descending and apply Top N filter (e.g. N = 15).
+
+Title as desired.
+
+k. Half‑Yearly Sales for 2011
+New Worksheet → “H1 vs H2 2011 Sales.”
+
+Drag InvoiceDate to Columns → right‑click → Custom → Bimonthly or create a calculated field:
+
+sql
+Copy
+Edit
+IF DATETRUNC('year',[InvoiceDate])=DATE('2011-01-01') THEN
+  IF DATEPART('month',[InvoiceDate])<=6 THEN 'H1 2011' ELSE 'H2 2011' END
+END
+Use that new field on Columns, Sales on Rows.
+
+Bar chart; title: “Half‑Year Sales 2011.”
+
+🔗 Dashboard (Optional)
+New Dashboard → drag in each worksheet.
+
+Add Filter Actions (e.g. Country, Year) so clicking one viz filters the others.
+
+Arrange neatly with titles and legends.
+
