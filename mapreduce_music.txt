@@ -1,0 +1,111 @@
+Open cloudera
+Start eclipse
+New java project 
+Name it WordCount
+Library-> add jar files from user lib hadoop and from client
+In src click new class and name it as wordcount and paste code and save
+Right click on wordcount project and select export -> java -> jar, browse location as desktop (and name it as wordcount?)
+Select next and select finish 
+
+If no errors:
+Open terminal and do the following:
+hadoop dfs -mkdir /WordIn
+cd Desktop
+hadoop dfs -copyFromLocal sample.txt /WordIn
+hadoop jar WordCount.jar WordCount /WordIn /WordOut
+hadoop dfs -cat /WordOut/part-r-00000
+
+
+START
+
+package com.example.music;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class MusicAnalytics {
+
+    // Mapper: emits listener IDs and share events keyed by track ID
+    public static class MusicMapper extends Mapper<Object, Text, Text, Text> {
+        private Text trackId = new Text();
+        private Text outValue = new Text();
+
+        @Override
+        protected void map(Object key, Text value, Context context)
+                throws IOException, InterruptedException {
+            // Assuming CSV format: listenerId,trackId,action
+            String[] fields = value.toString().split(",");
+            String listener = fields[0];
+            String track = fields[1];
+            String action = fields[2];
+
+            trackId.set(track);
+            // Mark listener occurrence
+            outValue.set("L_" + listener);
+            context.write(trackId, outValue);
+
+            // Mark share event
+            if ("share".equalsIgnoreCase(action)) {
+                outValue.set("S_1");
+                context.write(trackId, outValue);
+            }
+        }
+    }
+
+    // Reducer: aggregates unique listeners and total shares per track
+    public static class MusicReducer extends Reducer<Text, Text, Text, Text> {
+        private Text result = new Text();
+
+        @Override
+        protected void reduce(Text key, Iterable<Text> values, Context context)
+                throws IOException, InterruptedException {
+            Set<String> uniqueListeners = new HashSet<>();
+            int shareCount = 0;
+
+            for (Text val : values) {
+                String v = val.toString();
+                if (v.startsWith("L_")) {
+                    uniqueListeners.add(v.substring(2));
+                } else if (v.startsWith("S_")) {
+                    shareCount += Integer.parseInt(v.substring(2));
+                }
+            }
+            // Output: <trackId>  <uniqueListeners>    <shareCount>
+            result.set(uniqueListeners.size() + "\t" + shareCount);
+            context.write(key, result);
+        }
+    }
+
+    // Driver: configures and runs the MapReduce job
+    public static void main(String[] args) throws Exception {
+        if (args.length != 2) {
+            System.err.println("Usage: MusicAnalytics <input path> <output path>");
+            System.exit(-1);
+        }
+
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf, "Music Analytics");
+        job.setJarByClass(MusicAnalytics.class);
+
+        job.setMapperClass(MusicMapper.class);
+        job.setReducerClass(MusicReducer.class);
+
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}

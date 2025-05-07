@@ -1,0 +1,77 @@
+TERMINAL 1:
+
+hive
+
+create database flightsdb;
+
+use flightsdb;
+
+create table flights(fno int, source varchar(10), year int, delay int);
+
+alter table flights rename to air_flights;
+
+alter table air_flights add columns(dest varchar(10));
+
+drop table flight;
+
+create table flight(fno int, source varchar(10), year int, delay int) row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;
+
+insert into flight values(216, "pune", 2025, 10);
+
+
+IN LOCAL FILE shruti.txt WRITE:
+
+215,mumbai,2025,5
+217,banglore,2025,4
+218,kolkata,2025,2
+219,hyderabad,2025,1
+
+TERMINAL 1:
+
+load data local inpath "shruti.txt" overwrite into table flight;
+
+create table nflight(fno int, dest varchar(10), year int) row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;
+
+insert into nflight values(217, "nagpur", 2025);
+
+select a.fno, a.source, b.dest, a.delay, a.year from flight a join nflight b on (a.fno = b.fno);
+
+create table hive_int(id int, name varchar(10), sal int) row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;
+
+IN LOCAL FILE employees.txt WRITE:
+
+101,shruti,10000
+102,ram,20000
+
+TERMINAL 1:
+
+load data local inpath 'employees.txt' into table hive_int;
+
+TERMINAL 2:
+
+hbase shell
+
+create 'table', 'cf'
+
+
+TERMINAL 1:
+
+create external table hive_ext1(int id, name varchar(10), sal int) STORED by 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' WITH SERDEPROPERTIES("hbase.columns.mapping"=":key, cf:name,cf:sal") TBLPROPERTIES("hbase.table.name"="table");
+
+insert into hive_ext1 select * from hive_int;
+
+select * from hive_ext1;
+
+TERMINAL 2:
+
+scan 'table'
+
+AGGREGATE FUNC:
+
+select sum(sal) from employees as totalsalary;
+select count(*) from employees;
+select count(DISTINCT department) from employees;
+
+INDEX:
+
+create index myindex on employees(employee_name);

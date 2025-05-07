@@ -1,0 +1,55 @@
+# Census Bureau (Adult) Data Visualization in Jupyter Notebook
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset (using the UCI Adult dataset via read_csv)
+data = pd.read_csv('adult.csv')  # Ensure the file is in the same directory
+
+# Convert column names to lowercase for consistency
+data.columns = data.columns.str.lower()
+
+# Objective: Visualizing the distribution of Age using a Histogram
+plt.figure(figsize=(8,4))
+sns.histplot(data['age'], bins=20, color='skyblue')
+plt.title('Histogram of Age Distribution')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.show()
+
+# Objective: Visualizing Age distribution with a Dot Plot
+plt.figure(figsize=(8,4))
+plt.plot(data['age'], 'o', color='purple', markersize=2)
+plt.title('Dot Plot of Age Distribution')
+plt.xlabel('Index')
+plt.ylabel('Age')
+plt.show()
+
+# Objective: Visualizing Workclass distribution using a Bar Plot
+plt.figure(figsize=(8,4))
+data['workclass'].value_counts().plot(kind='bar', color='green')
+plt.title('Bar Plot of Workclass Distribution')
+plt.xlabel('Workclass')
+plt.ylabel('Count')
+plt.show()
+
+# Objective: Line Chart showing Average Hours per Week by Age
+average_hours = data.groupby('age')['hours.per.week'].mean()
+plt.figure(figsize=(8,4))
+plt.plot(average_hours.index, average_hours.values, color='orange')
+plt.title('Line Chart: Average Hours per Week by Age')
+plt.xlabel('Age')
+plt.ylabel('Average Hours per Week')
+plt.show()
+
+# Corrected Combined Plot: Histogram, Scatter Plot, and Box Plot
+plt.figure(figsize=(10,5))
+frequency = data['age'].value_counts().sort_index()
+sns.histplot(data['age'], color='skyblue', alpha=0.5)
+sns.boxplot(x=data['age'], color='lightgrey', width=0.2)
+sns.scatterplot(x=frequency.index, y=frequency.values, color='purple', alpha=0.6)
+plt.title('Corrected Combined Plot: Histogram, Scatter Plot, and Box Plot for Age')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.show()

@@ -1,0 +1,33 @@
+import requests
+import bs4
+
+request1 = requests.get('https://www.flipkart.com/oppo-k13-5g-7000mah-80w-supervooc-charger-in-the-box-icy-purple-128-gb/p/itm6f2ebf6d205cf?pid=MOBHB392H7TZ4ZKJ&lid=LSTMOBHB392H7TZ4ZKJT3QIAI&marketplace=FLIPKART&q=mobiles&store=tyy%2F4io&srno=s_1_3&otracker=AS_Query_TrendingAutoSuggest_1_0_na_na_na&otracker1=AS_Query_TrendingAutoSuggest_1_0_na_na_na&fm=organic&iid=22e0aa4e-c6dd-411d-b76c-c8441ec45dba.MOBHB392H7TZ4ZKJ.SEARCH&ppt=hp&ppn=homepage&ssid=vwnk1x498g0000001746528749074&qH=eb4af0bf07c16429')
+request1
+
+request1.content
+
+soup = bs4.BeautifulSoup(request1.text)
+soup
+
+# fetch real time comments 
+comments = soup.findAll('div', {'class':'ZmyHeo'});
+for comment in comments:
+    print(comment.get_text()+'\n\n')
+
+#ratings
+
+#avg rating
+avg_rating = soup.find('div', {'class' : 'ipqd2A'});
+print(avg_rating.get_text())
+
+#individual ratings
+individual_ratings = soup.findAll('div', {'class':'XQDdHH Ga3i8K'});
+for rating in individual_ratings:
+    print(rating.get_text()+'\n')
+
+#customer name
+cust_names = soup.findAll('div', {'class':'_2NsDsF AwS1CA'});
+print(len(cust_names))
+
+for name in cust_names:
+    print(name.get_text()+'\n')

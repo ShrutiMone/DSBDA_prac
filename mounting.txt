@@ -1,0 +1,2 @@
+create folders of same names (data) in both machines desktops
+cloudera -> devices -> shared folders -> shared folder settings -> rightclick on machine folders -> add shared folder ->browse for the folder on host -> select auto mount and permanent -> ok -> ok ->open terminal -> su -> cd Desktop -> ls to confirm folder -> mount -t vboxsf data data -> test whether files put into one folder are relecting into other

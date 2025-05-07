@@ -1,0 +1,72 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# 1. Load the dataset
+df = pd.read_csv('heart.csv')  # update path as needed
+
+# (Optional) quick look
+print(df.head(), '\n')
+print(df.info(), '\n')
+
+# =============================================================================
+# a. Histograms
+# Objective: Show the distribution of patient ages to see common age ranges.
+# =============================================================================
+plt.figure(figsize=(8, 4))
+sns.histplot(df['age'], bins=20, kde=True)
+plt.title('Histogram of Patient Ages')
+plt.xlabel('Age')
+plt.ylabel('Count')
+plt.show()
+
+# =============================================================================
+# b. Pie Charts
+# Objective: Visualize the proportion of patients with vs. without heart disease.
+# =============================================================================
+# assuming 'target'==1 means disease present
+counts = df['target'].value_counts()
+labels = ['No Disease', 'Disease']
+plt.figure(figsize=(6, 6))
+plt.pie(counts, labels=labels, autopct='%1.1f%%', startangle=90, 
+        wedgeprops={'edgecolor':'k'})
+plt.title('Proportion of Heart Disease vs. No Disease')
+plt.axis('equal')
+plt.show()
+
+# =============================================================================
+# c. Box Plots
+# Objective: Compare the spread of resting blood pressure (trestbps) across disease status.
+# =============================================================================
+plt.figure(figsize=(8, 4))
+sns.boxplot(x='target', y='trestbps', data=df)
+plt.xticks([0,1], labels=['No Disease','Disease'])
+plt.title('Resting Blood Pressure by Disease Status')
+plt.xlabel('Disease Status')
+plt.ylabel('Resting BP (mm Hg)')
+plt.show()
+
+# =============================================================================
+# d. Scatter Plots
+# Objective: Explore relationship between serum cholesterol and max heart rate.
+# =============================================================================
+plt.figure(figsize=(8, 6))
+sns.scatterplot(x='chol', y='thalach', hue='target', data=df, palette=['green','red'])
+plt.title('Cholesterol vs. Max Heart Rate')
+plt.xlabel('Serum Cholesterol (mg/dl)')
+plt.ylabel('Max Heart Rate Achieved')
+plt.legend(title='Disease')
+plt.show()
+
+# =============================================================================
+# e. Scatter with Marginal Boxplots
+# Objective: Combine scatter of age vs. max heart rate with boxplots on each axis.
+# =============================================================================
+g = sns.JointGrid(data=df, x='age', y='thalach', height=8)
+g.plot_joint(sns.scatterplot, hue=df['target'], palette=['blue','orange'], s=40, alpha=0.6)
+g.plot_marginals(sns.boxplot, orient='h', width=0.6)
+g.ax_marg_x.set_title('Age vs. Max HR with Marginal Boxplots', pad=20)
+g.ax_marg_x.set_xlabel('Age')
+g.ax_marg_y.set_ylabel('Max Heart Rate')
+plt.legend(['No Disease','Disease'], title='Disease', loc='upper left')
+plt.show()

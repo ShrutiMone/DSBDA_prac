@@ -1,0 +1,72 @@
+import pandas as pd
+
+# Load the file with comma as the delimiter
+df = pd.read_csv('dataset_Facebook.csv', delimiter=';')
+
+print(df.shape)  # Should print (500, 19)
+
+df.head()
+
+# 1. Using loc[] to create a subset based on labels (e.g., selecting specific rows and columns)
+# loc[] is used when we know the "labels" of the rows and columns
+subset_loc = df.loc[0:10, ['Type', 'Category', 'like', 'share']] # first 5 rows (0:4) and give columns
+
+subset_loc
+
+# 2. Using iloc[] to create a subset based on index positions
+# iloc[] is used when we know the "positions" (numeric indices) of the rows/columns
+subset_iloc = df.iloc[0:7, 0:5]  # first 7 rows, first 5 columns
+
+subset_iloc
+
+# 3. Using indexing operator [] to select specific columns (simple way)
+subset_indexing = df[['Type', 'Category', 'like', 'share']] # All rows selecte here
+
+subset_indexing.head()
+
+# 4. Creating two subsets to merge (based on post types) --> MAIN
+photo_posts = df[df['Type'] == 'Photo']
+status_posts = df[df['Type'] == 'Status']
+
+photo_posts.head() # All photos are a part of this subset
+
+status_posts.head() # All status are a part of this subset
+
+# Merging the above datasets vertically using pd.concat() (acts like UNION)
+merged_subset = pd.concat([photo_posts, status_posts], ignore_index=True)
+
+merged_subset.head() # Printing top 5 rows
+
+merged_subset.tail() # Printing bottom 5 rows
+
+# Sorting the data by 'Page total likes' in descending order
+# This helps us understand which posts were made when the page had the most likes
+sorted_df = df.sort_values(by='Page total likes', ascending=False)
+
+sorted_df[['Page total likes', 'Type', 'like']].head()
+
+# Transposing flips rows to columns and columns to rows
+# Useful when we want to analyze features (columns) as observations
+transposed_df = df.transpose()
+
+transposed_df
+
+# Melting reshapes the dataframe from wide to long format
+# It's useful when we want to unpivot columns into rows for analysis
+# Here, we melt the 'like' and 'share' columns while keeping 'Type' as identifier
+melted_df = pd.melt(df,
+                    id_vars=['Type'],
+                    value_vars=['like', 'share'],
+                    var_name='Engagement Type',
+                    value_name='Count')
+
+melted_df
+
+# Pivoting is the reverse of melting: it reshapes long format data back to wide
+# Here, we pivot 'Type' as rows, 'Engagement Type' as columns, and 'Count' as values
+wide_df = melted_df.pivot_table(index='Type',
+                                 columns='Engagement Type',
+                                 values='Count',
+                                 aggfunc='mean')  # Aggregating using mean for simplicity
+
+wide_df

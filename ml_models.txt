@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+# Read CSV file
+df = pd.read_csv('heart.csv')
+df.head()
+missing_values = df.isnull().sum()
+print(missing_values)
+
+# Data Cleaning
+# Replace ? with NaN and remove them
+df.replace('?', np.nan, inplace=True)
+df.dropna(inplace=True)
+
+# Removing negative values (if any)
+numeric_columns = df.select_dtypes(include=['number']).columns
+for col in numeric_columns:
+    df = df[df[col] >= 0]
+
+# Outlier Detection and Removal using IQR
+Q1 = df[numeric_columns].quantile(0.25)
+Q3 = df[numeric_columns].quantile(0.75)
+IQR = Q3 - Q1
+
+# Filtering out outliers
+df = df[~((df[numeric_columns] < (Q1 - 1.5 * IQR)) | (df[numeric_columns] > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+# Data Transformation (Normalization)
+scaler = StandardScaler()
+X = df.drop('target', axis=1)  # Assuming 'target' is the label column
+y = df['target']
+X_scaled = scaler.fit_transform(X)
+
+
+# Splitting data
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+
+# Model 1: Logistic Regression
+lr_model = LogisticRegression()
+lr_model.fit(X_train, y_train)
+lr_preds = lr_model.predict(X_test)
+
+# Model 2: k-Nearest Neighbors
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+knn_preds = knn_model.predict(X_test)
+
+#Model 3: Naive Bayes
+nb_model = GaussianNB()
+nb_model.fit(X_train, y_train)
+nb_preds = nb_model.predict(X_test)
+
+# Evaluating both models
+lr_accuracy = accuracy_score(y_test, lr_preds)
+knn_accuracy = accuracy_score(y_test, knn_preds)
+nb_accuracy = accuracy_score(y_test, nb_preds)
+
+print(f"Logistic Regression Accuracy: {lr_accuracy * 100:.2f}%")
+print(f"k-NN Accuracy: {knn_accuracy * 100:.2f}%")
+print(f"Naive Bayes Accuracy: {nb_accuracy * 100:.2f}%")
+
